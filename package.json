@@ -1,0 +1,16 @@
+{
+	"name": "simplenn",
+	"version": "1.0.0",
+	"description": "",
+	"main": "src/index.ts",
+	"scripts": {
+		"start": "node src/index.ts",
+		"build": "tsc"
+	},
+	"author": "banik",
+	"license": "ISC",
+	"dependencies": {
+		"numjs": "^0.16.1",
+		"typescript": "^4.6.3"
+	}
+}
