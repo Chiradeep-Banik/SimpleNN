@@ -88,6 +88,9 @@ const backPropagation=(Y,Y_lable,X,Z1,X2,Z2)=>{
     let dX2_dZ1 = derivative_relu(Z1);
     let dZ1_dW1 = X;
 
+    /**
+     * @error : dimensions are not adding up in this layer
+     */
     let dE_dW1 = multiply(dX2_dZ1,dotMultiply(dE_dW2,transpose(dZ1_dW1)));
     let dE_dB1 = multiply(dX2_dZ1,dE_dY);
 
