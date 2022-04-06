@@ -62,7 +62,7 @@ for(let i = 0;i<5000;i++){
 }
 
 
-createReadStream('/home/banik/Desktop/Code/SimpleNN/DATA/XOR/perceptron_DataSet.csv')
+createReadStream('/home/banik/Desktop/Code/SimpleNN/DATA/perceptron_DataSet.csv')
     .pipe(csv())
     .on('data', (data) => {
         x1.push(data.x);

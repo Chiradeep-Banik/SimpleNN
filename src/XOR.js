@@ -8,10 +8,10 @@ let x2= [];
 
 let y= [];
 
-let weights1 =ones(2,2);
-let bias1 = ones(2,1);
+let weights1 =ones(3,2);
+let bias1 = ones(3,1);
 
-let weights2 = ones(1,2);
+let weights2 = ones(1,3);
 let bias2 = ones(1,1);
 
 
@@ -79,20 +79,21 @@ const backPropagation=(Y,Y_lable,X,Z1,X2,Z2)=>{
     E = E.map(x => {
         return x**2;
     });
-    let dY_dZ2 = devrivative_sigmoid(Z2);
-    let dZ2_dW2 = X2;
+    let dY_dZ2 = derivative_relu(Z2);
+    let dE_dZ2 = multiply(dE_dY,dY_dZ2);
 
-    let dE_dW2 = multiply(dY_dZ2 ,multiply(dE_dY,transpose(dZ2_dW2)));
-    let dE_dB2 = multiply(dY_dZ2,dE_dY);
+
+    let dZ2_dW2 = transpose(X2);
+    let dE_dW2 = multiply(dE_dZ2,dZ2_dW2);
+    let dE_dB2 = dE_dZ2;
+
+    let dE_dX2 = multiply(transpose(weights2),dE_dZ2);
 
     let dX2_dZ1 = derivative_relu(Z1);
-    let dZ1_dW1 = X;
+    let dE_dZ1 = dotMultiply(dE_dX2,dX2_dZ1);
 
-    /**
-     * @error : dimensions are not adding up in this layer
-     */
-    let dE_dW1 = multiply(dX2_dZ1,dotMultiply(dE_dW2,transpose(dZ1_dW1)));
-    let dE_dB1 = multiply(dX2_dZ1,dE_dY);
+    let dE_dW1 = multiply(dE_dZ1,transpose(X));
+    let dE_dB1 = dE_dZ1;
 
     return { dE_dW1,dE_dB1,dE_dW2,dE_dB2};
 };
@@ -102,17 +103,17 @@ const train = (X,Y_lable,learning_rate,epoch)=>{
     for(let i = 0 ; i<epoch;i++){
         let { Z1,X2,Z2,Y } = forwordPropagation(X,weights1,bias1,weights2,bias2);
         let { dE_dB1,dE_dB2,dE_dW1,dE_dW2 } = backPropagation(Y,Y_lable,X,Z1,X2,Z2);
-        weights1 = add(weights1,multiply(learning_rate,dE_dW1));
-        weights2 = add(weights2,multiply(learning_rate,dE_dW2));
-        bias1 = add(bias1,multiply(learning_rate,dE_dB1));
-        bias2 = add(bias2,multiply(learning_rate,dE_dB2));
+        weights1 = subtract(weights1,multiply(learning_rate,dE_dW1));
+        weights2 = subtract(weights2,multiply(learning_rate,dE_dW2));
+        bias1 = subtract(bias1,multiply(learning_rate,dE_dB1));
+        bias2 = subtract(bias2,multiply(learning_rate,dE_dB2));
     }
 
     return { weights1,bias1,weights2,bias2};
 }
 
 
-createReadStream('/home/banik/Desktop/Code/SimpleNN/DATA/XOR/Xor_Dataset.csv')
+createReadStream('/home/banik/Desktop/Code/SimpleNN/DATA/Xor_Dataset.csv')
     .pipe(csv())
     .on('data', (data) => {
         x1.push(data.x);
@@ -143,6 +144,10 @@ createReadStream('/home/banik/Desktop/Code/SimpleNN/DATA/XOR/Xor_Dataset.csv')
                     }
                     if(FORWORD.Y.get([0,0]) < 0.5 && Y_lable.get([0,0]) == 0){
                         result++;
+                    }
+                    if(i == 6900){
+                        console.log("My Val -- ",FORWORD.Y.get([0,0]));
+                        console.log("Real -- ",Y_lable.get([0,0]));
                     }
                 }
                 console.log(`Accuracy at ${i} --- ${(result/testing_x1.length)*100}%`);
